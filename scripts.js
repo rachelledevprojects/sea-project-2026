@@ -109,6 +109,8 @@ function deleteResult() {
     console.log(data);
     alert(filteredResult.length + " filtered books successfully deleted.");
     //refresh list
+    document.getElementById("sort-select").value = "";
+    document.getElementById("sort-select").selectedIndex = 0;
     showAllBooks();
     document.getElementById("search-input").value = "";
     document.getElementById("delete-shown-btn").disabled = true;
@@ -121,7 +123,10 @@ function restoreData() {
   const confirmRestore = confirm("Are you sure you want to restore the original data?");
   if (confirmRestore) {
     data = structuredClone(original);
+    filteredResult = data.books;
     //console.log(data.books);
+    document.getElementById("sort-select").value = "";
+    document.getElementById("sort-select").selectedIndex = 0;
     showBooks(data.books);
     alert("Books restored!");
     document.getElementById("restore-btn").disabled = true;
