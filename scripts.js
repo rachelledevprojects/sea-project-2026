@@ -1,6 +1,6 @@
-// 
-//
-//
+// Snap SEA 2026 Project 
+// by Rachelle Martinez
+// This project show manipulation of data in array and objects
 
 function showAllBooks() {
   filteredResult = data.books;
