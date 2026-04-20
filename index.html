@@ -1,31 +1,86 @@
 <!doctype html>
 <html>
   <head>
-    <title>LA TV Shows | Home</title>
-    <meta name="description" content="A Catalog of Shows Set in Los Angeles" />
+    <title>Curriculum Library | Home</title>
+    <meta
+      name="description"
+      content="A catalog of books, curriculums, and learning resources"
+    />
+
     <link rel="stylesheet" href="style.css" />
-    <script type="text/javascript" src="scripts.js"></script>
+    <script type="module" src="scripts.js"></script>
   </head>
 
   <body>
     <header class="main-header">
-      <h1 class="title">LA TV Shows</h1>
+      <h1 class="title">Curriculum Library</h1>
+      <p class="subtitle">Books - Curriculums - Resources</p>
     </header>
-    <div id="card-container"></div>
-    <div class="card" style="display: none">
-      <div class="card-content">
-        <h2>TV Show Title</h2>
-        <img src="" alt="TV Show Poster" />
-        <ul>
-          <li>Bullet Point 1</li>
-          <li>Bullet Point 2</li>
-          <li>Bullet Point 3</li>
-        </ul>
-      </div>
+
+    <!-- SEARCH + ACTIONS -->
+    <div class="search-bar">
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Search books, authors, subjects, curriculum or resources"
+      />
+
+      <button id="search-btn">Search</button>
+
+      <button id="delete-shown-btn" class="danger-btn" disabled>
+        Delete Shown
+      </button>
+
+      <button id="restore-btn" disabled>Restore</button>
     </div>
-    <div class="footer">
-      <button onclick="quoteAlert()">Get A Quote!</button>
-      <button onclick="removeLastCard()">Remove A Card!</button>
+
+    
+
+    <!-- RESULT COUNT -->
+    <div class="results-row">
+  <p id="result-count">Showing all books</p>
+
+  <div class="sort-bar">
+    <label for="sort-select" class="sort-label">Sort by:</label>
+    <select id="sort-select">
+      <option value="">Select</option>
+      <option value="title-asc">Title A-Z</option>
+      <option value="title-desc">Title Z-A</option>
+      <option value="author-asc">Author A-Z</option>
+      <option value="author-desc">Author Z-A</option>
+      <option value="grade-asc">Grade Low-High</option>
+      <option value="grade-desc">Grade High-Low</option>
+    </select>
+  </div>
+</div>
+
+    <!-- CARDS -->
+    <div id="card-container"></div>
+
+    <!-- TEMPLATE -->
+    <div id="card-template" class="card" style="display: none">
+      <div class="card-content">
+        <h2 class="book-title">Book Title</h2>
+
+        <p class="book-author">by Author Name</p>
+
+        <p class="book-subjects">
+          <strong>Subjects:</strong> <span></span>
+        </p>
+
+        <p class="book-grades">
+          <strong>Grades:</strong> <span></span>
+        </p>
+
+        <p class="book-curriculums">
+          <strong>Used In:</strong> <span></span>
+        </p>
+
+        <div class="book-resources">
+          <strong>Resources:</strong>
+          <ul class="resource-list"></ul>
+        </div>
+      </div>
     </div>
   </body>
 </html>

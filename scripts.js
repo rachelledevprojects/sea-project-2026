@@ -1,97 +1,137 @@
-/**
- * Data Catalog Project Starter Code - SEA Stage 2
- *
- * This file is where you should be doing most of your work. You should
- * also make changes to the HTML and CSS files, but we want you to prioritize
- * demonstrating your understanding of data structures, and you'll do that
- * with the JavaScript code you write in this file.
- *
- * The comments in this file are only to help you learn how the starter code
- * works. The instructions for the project are in the README. That said, here
- * are the three things you should do first to learn about the starter code:
- * - 1 - Change something small in index.html or style.css, then reload your
- *    browser and make sure you can see that change.
- * - 2 - On your browser, right click anywhere on the page and select
- *    "Inspect" to open the browser developer tools. Then, go to the "console"
- *    tab in the new window that opened up. This console is where you will see
- *    JavaScript errors and logs, which is extremely helpful for debugging.
- *    (These instructions assume you're using Chrome, opening developer tools
- *    may be different on other browsers. We suggest using Chrome.)
- * - 3 - Add another string to the titles array a few lines down. Reload your
- *    browser and observe what happens. You should see a fourth "card" appear
- *    with the string you added to the array, but a broken image.
- *
- */
+// 
+//
+//
 
-const FRESH_PRINCE_URL =
-  "https://upload.wikimedia.org/wikipedia/en/3/33/Fresh_Prince_S1_DVD.jpg";
-const CURB_POSTER_URL =
-  "https://m.media-amazon.com/images/M/MV5BZDY1ZGM4OGItMWMyNS00MDAyLWE2Y2MtZTFhMTU0MGI5ZDFlXkEyXkFqcGdeQXVyMDc5ODIzMw@@._V1_FMjpg_UX1000_.jpg";
-const EAST_LOS_HIGH_POSTER_URL =
-  "https://static.wikia.nocookie.net/hulu/images/6/64/East_Los_High.jpg";
+function showAllBooks() {
+  showBooks(data.books);
+}
 
-// This is an array of strings (TV show titles)
-let titles = [
-  "Fresh Prince of Bel Air",
-  "Curb Your Enthusiasm",
-  "East Los High",
-];
-// Your final submission should have much more data than this, and
-// you should use more than just an array of strings to store it all.
+function showBooks(books) {
+  const container = document.getElementById("card-container");
+  const template = document.getElementById("card-template");
+  const resultCount = document.getElementById("result-count");
 
-// This function adds cards the page to display the data in the array
-function showCards() {
-  const cardContainer = document.getElementById("card-container");
-  cardContainer.innerHTML = "";
-  const templateCard = document.querySelector(".card");
+  resultCount.textContent = "Showing " + books.length + " Results..";
 
-  for (let i = 0; i < titles.length; i++) {
-    let title = titles[i];
+  container.innerHTML = "";
+  books.forEach(book => {
+    //console.log(book);
+    
+    //create new card for every book
+    const card = template.cloneNode(true);
+    card.removeAttribute("id");
+    card.style.display = "block";
 
-    // This part of the code doesn't scale very well! After you add your
-    // own data, you'll need to do something totally different here.
-    let imageURL = "";
-    if (i == 0) {
-      imageURL = FRESH_PRINCE_URL;
-    } else if (i == 1) {
-      imageURL = CURB_POSTER_URL;
-    } else if (i == 2) {
-      imageURL = EAST_LOS_HIGH_POSTER_URL;
-    }
+    card.querySelector(".book-title").textContent = book.title;
+    card.querySelector(".book-author").textContent = "by "+book.author;
+    card.querySelector(".book-subjects span").textContent = book.subjects.join(", ");
+    card.querySelector(".book-grades span").textContent = book.gradeLevels.join(", ");
 
-    const nextCard = templateCard.cloneNode(true); // Copy the template card
-    editCardContent(nextCard, title, imageURL); // Edit title and image
-    cardContainer.appendChild(nextCard); // Add new card to the container
+    showCurriculum(card, book.curriculumIds);
+    showResources(card, book.resourceIds);
+
+    //append the card to the container;
+    container.appendChild(card);
+  });
+}
+
+//function to show curriculums associated with the book
+function showCurriculum(card, curriculumcIds) {
+  const curriculums = data.curriculums;
+  let cnames = "";
+
+  curriculumcIds.forEach(id => {
+    const curriculum = curriculums.find(c => c.id == id);
+    cnames = cnames + curriculum.name + " "
+  });
+
+  card.querySelector(".book-curriculums span").textContent = cnames;
+    //console.log(curriculum);
+}
+
+//function to show resources associated with the book
+function showResources(card, resourceIds) {
+  const resources = data.resources;
+  const resourceList = card.querySelector(".resource-list");
+  resourceList.innerHTML = "";
+
+  resourceIds.forEach(id => {
+    const resource = resources.find(r => r.id == id);
+    const li = document.createElement("li");
+    li.textContent = resource.title;
+    resourceList.appendChild(li);
+  });  
+}
+
+//triggered when search button is clicked
+function findAll() {
+  const searchVal = document.getElementById('search-input').value.toLowerCase();
+  //console.log(searchVal);
+
+  //find based on curriculum name
+  const cIds = data.curriculums
+              .filter(c => c.name.toLowerCase().includes(searchVal))
+              .map(c => c.id);
+  //console.log(cIds); 
+
+  //find based on resource name
+  const rIds = data.resources
+              .filter(r => r.title.toLowerCase().includes(searchVal))
+              .map(r => r.id);
+  //console.log(rIds); 
+
+  //find by book title, author, subject, curriname, resource
+  //assign it to gloval var to be able to delete later
+  filteredResult = data.books.filter(b=> 
+    b.title.toLowerCase().includes(searchVal)
+    || b.author.toLowerCase().includes(searchVal)
+    || b.subjects.some(s => s.toLowerCase().includes(searchVal))
+    || b.curriculumIds.some(c => cIds.includes(c))
+    || b.resourceIds.some(r => rIds.includes(r))
+  );
+
+  //console.log(filteredResult.length);
+  showBooks(filteredResult);
+  document.getElementById("delete-shown-btn").disabled = false;
+  //document.getElementById("restore-btn").disabled = false;
+}
+
+//delete result shown
+function deleteResult() {
+  const confirmDelete = confirm("Are your sure you want to delete the data?");
+  if (confirmDelete) {
+    console.log(filteredResult);
+    data.books = data.books.filter(b => 
+      !filteredResult.some(f => f.id == b.id)
+    );
+    console.log("books deleted!");
+    console.log(data);
+    alert(filteredResult.length + " filtered books successfully deleted.");
+    //refresh list
+    showAllBooks();
+    document.getElementById("search-input").value = "";
+    document.getElementById("delete-shown-btn").disabled = true;
+    document.getElementById("restore-btn").disabled = false;
   }
 }
 
-function editCardContent(card, newTitle, newImageURL) {
-  card.style.display = "block";
-
-  const cardHeader = card.querySelector("h2");
-  cardHeader.textContent = newTitle;
-
-  const cardImage = card.querySelector("img");
-  cardImage.src = newImageURL;
-  cardImage.alt = newTitle + " Poster";
-
-  // You can use console.log to help you debug!
-  // View the output by right clicking on your website,
-  // select "Inspect", then click on the "Console" tab
-  console.log("new card:", newTitle, "- html: ", card);
+//function restore data
+function restoreData() {
+  const confirmRestore = confirm("Are you sure you want to restore the original data?");
+  if (confirmRestore) {
+    data = structuredClone(original);
+    //console.log(data.books);
+    showBooks(data.books);
+    alert("Books restored!");
+    document.getElementById("restore-btn").disabled = true;
+  }
+  
 }
 
-// This calls the addCards() function when the page is first loaded
-document.addEventListener("DOMContentLoaded", showCards);
-
-function quoteAlert() {
-  console.log("Button Clicked!");
-  alert(
-    "I guess I can kiss heaven goodbye, because it got to be a sin to look this good!",
-  );
-}
-
-function removeLastCard() {
-  titles.pop(); // Remove last item in titles array
-  showCards(); // Call showCards again to refresh
-}
+import { original } from "./data.js";
+let data = structuredClone(original);
+let filteredResult = [];
+document.addEventListener("DOMContentLoaded", showAllBooks);
+document.getElementById("search-btn").addEventListener("click", findAll);
+document.getElementById("delete-shown-btn").addEventListener("click", deleteResult);
+document.getElementById("restore-btn").addEventListener("click", restoreData);
