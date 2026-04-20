@@ -3,6 +3,7 @@
 //
 
 function showAllBooks() {
+  filteredResult = data.books;
   showBooks(data.books);
 }
 
@@ -128,6 +129,27 @@ function restoreData() {
   
 }
 
+//sort data and refresh book list view
+function dataSort() {
+  //console.log(filteredResult);
+  const sortValue = document.getElementById("sort-select").value;
+  //console.log(sortValue);
+
+  switch(sortValue) {
+    case "title-asc":
+      filteredResult.sort((a,b) => a.title.localeCompare(b.title));
+      break;
+    case "title-desc":
+      filteredResult.sort((a,b) => b.title.localeCompare(a.title));
+      break;
+      
+  }
+
+  
+  showBooks(filteredResult);
+}
+
+
 import { original } from "./data.js";
 let data = structuredClone(original);
 let filteredResult = [];
@@ -135,3 +157,4 @@ document.addEventListener("DOMContentLoaded", showAllBooks);
 document.getElementById("search-btn").addEventListener("click", findAll);
 document.getElementById("delete-shown-btn").addEventListener("click", deleteResult);
 document.getElementById("restore-btn").addEventListener("click", restoreData);
+document.getElementById("sort-select").addEventListener("change", dataSort)
